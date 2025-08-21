@@ -39,7 +39,7 @@ How to Run
 
 Clone this repository:
 
-git clone https://github.com/RohitU-76/online-reservation-system.git
+git clone https://github.com/Rohit-U76/online-reservation-system.git
 
 
 Open the project in your preferred IDE.
