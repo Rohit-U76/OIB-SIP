@@ -22,10 +22,8 @@ Cancellation Form – Cancel tickets easily using PNR number
 Tech Stack
 
 Programming Language: Java
-
-Database: MySQL / PostgreSQL (mention whichever you used)
-
-IDE: IntelliJ IDEA / Eclipse / NetBeans (mention yours)
+Database: MySQL 
+IDE: IntelliJ IDEA 
 
 Project Structure
 /OnlineReservationSystem
@@ -41,7 +39,7 @@ How to Run
 
 Clone this repository:
 
-git clone https://github.com/your-username/online-reservation-system.git
+git clone https://github.com/RohitU-76/online-reservation-system.git
 
 
 Open the project in your preferred IDE.
