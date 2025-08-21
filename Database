@@ -1,0 +1,26 @@
+CREATE DATABASE reservation_db;
+
+USE reservation_db;
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE reservations (
+    id SERIAL PRIMARY KEY,usersusersusers
+    pnr VARCHAR(36) UNIQUE NOT NULL,
+    username VARCHAR(50),
+    train_no VARCHAR(20),
+    train_name VARCHAR(50),
+    class_type VARCHAR(20),
+    journey_date DATE,
+    from_place VARCHAR(50),
+    to_place VARCHAR(50),
+    status VARCHAR(20) DEFAULT 'CONFIRMED'
+);
+
+SELECT * FROM users;
+
+SELECT * FROM reservations;
