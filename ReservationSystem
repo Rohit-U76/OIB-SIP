@@ -1,0 +1,89 @@
+import java.sql.*;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.*;
+
+public class ReservationSystem {
+    static final String URL = "jdbc:mysql://localhost:3306/reservation_db";
+    static final String USER = "root";
+    static final String PASS = "root";
+    static Scanner sc = new Scanner(System.in);
+
+    public static void main(String[] args) throws Exception {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        try (Connection con = DriverManager.getConnection(URL, USER, PASS)) {
+            while (true) {
+                System.out.println("Login Form: "+"\n1.Register 2.Login 3.Exit");
+                int ch = sc.nextInt(); sc.nextLine();
+                if (ch == 1) register(con);
+                else if (ch == 2) login(con);
+                else break;
+            }
+        }
+    }
+
+    static void register(Connection con) throws SQLException {
+        System.out.print("Username: "); String u = sc.nextLine();
+        System.out.print("Password: "); String p = sc.nextLine();
+        PreparedStatement ps = con.prepareStatement("INSERT INTO users(username,password) VALUES(?,?)");
+        ps.setString(1, u); ps.setString(2, p);
+        try { ps.executeUpdate(); System.out.println("Registered!"); }
+        catch (SQLException e) { System.out.println("Username exists."); }
+    }
+
+    static void login(Connection con) throws SQLException {
+        System.out.print("Username: "); String u = sc.nextLine();
+        System.out.print("Password: "); String p = sc.nextLine();
+        PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE username=? AND password=?");
+        ps.setString(1, u); ps.setString(2, p);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) userMenu(con, u);
+        else System.out.println("Invalid login.");
+    }
+
+    static void userMenu(Connection con, String username) throws SQLException {
+        while (true) {
+            System.out.println("\n1.Book 2.View 3.Cancel 4.Logout");
+            int ch = sc.nextInt(); sc.nextLine();
+            if (ch == 1) book(con, username);
+            else if (ch == 2) view(con, username);
+            else if (ch == 3) cancel(con, username);
+            else break;
+        }
+    }
+
+    static void book(Connection con, String u) throws SQLException {
+        System.out.print("Train no: "); String tno = sc.nextLine();
+        System.out.print("Train name: "); String tname = sc.nextLine();
+        System.out.print("Class type: "); String ctype = sc.nextLine();
+        System.out.print("Journey date (YYYY-MM-DD): "); LocalDate jd = LocalDate.parse(sc.nextLine());
+        System.out.print("From: "); String from = sc.nextLine();
+        System.out.print("To: "); String to = sc.nextLine();
+        String pnr = UUID.randomUUID().toString();
+        PreparedStatement ps = con.prepareStatement(
+                "INSERT INTO reservations(pnr,username,train_no,train_name,class_type,journey_date,from_place,to_place) VALUES(?,?,?,?,?,?,?,?)"
+        );
+        ps.setString(1, pnr); ps.setString(2, u); ps.setString(3, tno); ps.setString(4, tname);
+        ps.setString(5, ctype); ps.setDate(6, Date.valueOf(jd)); ps.setString(7, from); ps.setString(8, to);
+        ps.executeUpdate();
+        System.out.println("Booked! PNR: " + pnr);
+    }
+
+    static void view(Connection con, String u) throws SQLException {
+        PreparedStatement ps = con.prepareStatement("SELECT * FROM reservations WHERE username=?");
+        ps.setString(1, u);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            System.out.println(rs.getString("pnr") + " | " + rs.getString("train_no") +
+                    " - " + rs.getString("train_name") + " | " + rs.getString("status"));
+        }
+    }
+
+    static void cancel(Connection con, String u) throws SQLException {
+        System.out.print("Enter PNR: "); String pnr = sc.nextLine();
+        PreparedStatement ps = con.prepareStatement("UPDATE reservations SET status='CANCELLED' WHERE pnr=? AND username=?");
+        ps.setString(1, pnr); ps.setString(2, u);
+        int rows = ps.executeUpdate();
+        System.out.println(rows > 0 ? "Cancelled!" : "PNR not found.");
+    }
+}
